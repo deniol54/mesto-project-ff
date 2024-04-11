@@ -19,10 +19,10 @@ function createCard(cardName, cardImgLink, deleteCardFunction) {
   cardElement.querySelector('.card__title').textContent = cardName;
   cardElement.querySelector('.card__image').src = cardImgLink;
   cardDeleteButton.addEventListener('click', deleteCardFunction);
-  cardsContainer.append(cardElement);
+  return cardElement
 }
 
 for(let i = 0; i<initialCards.length; i++) {
-  createCard(initialCards[i].name, initialCards[i].link, deleteCard);
+  cardsContainer.append(createCard(initialCards[i].name, initialCards[i].link, deleteCard));
 }
 
