@@ -1,10 +1,13 @@
-import { initialCards, deleteCard, createCard, likeCard } from './components/cards.js';
-import { openPopup } from './components/modal.js';
+import { deleteCard, createCard, likeCard } from './components/card.js';
+import { closePopup, openPopup, closePopupByClick } from './components/modal.js';
+import { initialCards } from './components/cards.js'
 import '../pages/index.css'; // добавьте импорт главного файла стилей
 //Список карточек
 const cardsContainer = document.querySelector('.places__list');
-// Страница
-const pageContent = document.querySelector('.page__content');
+// Кнопка добавления новой карточки
+const profileAddButton = document.querySelector('.profile__add-button');
+// Кнопка редактирования профиля
+const profileEditButton = document.querySelector('.profile__edit-button');
 // ----------Попапы----------
 // Попап редактирования профиля
 const popupEdit = document.querySelector('.popup_type_edit');
@@ -13,10 +16,15 @@ const popupEdit = document.querySelector('.popup_type_edit');
 const popupAdd = document.querySelector('.popup_type_new-card');
 // Попап клика на картинку
 const popupImage = document.querySelector('.popup_type_image');
+const backImage = popupImage.querySelector('.popup__image');
+const backImageDescription = popupImage.querySelector('.popup__caption');
 
+const popups = [popupEdit, popupAdd, popupImage];
 // ----------Формы----------
 // Форма редактирования профиля
 const formEdit = document.forms['edit-profile'];
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
 // Поля формы редактирования профиля
 const nameInput = formEdit.elements.name;
 const jobInput = formEdit.elements.description;
@@ -26,12 +34,12 @@ const formAdd = document.forms['new-place'];
 const namePlace = formAdd.elements['place-name'];
 const imageLink = formAdd.elements.link;
 
+
 // Функция обработки клика по изобрадению карточки
 function clickCard (evt) {
-  const backImage = popupImage.querySelector('.popup__image');
-  const backImageDescription = popupImage.querySelector('.popup__caption');
   backImage.src = evt.target.src;
-  backImageDescription.textContent = evt.target.parentElement.querySelector('.card__title').textContent
+  backImage.alt = evt.target.alt;
+  backImageDescription.textContent = evt.target.closest('.card').querySelector('.card__title').textContent
   openPopup(popupImage);
 }
 
@@ -41,22 +49,26 @@ function addFormSubmit(evt) {
   const place = namePlace.value;
   const link = imageLink.value;
   cardsContainer.prepend(createCard(place, link, deleteCard, likeCard, clickCard));
-  evt.target.parentElement.parentElement.classList.remove('popup_is-opened');
+  closePopup(popupAdd);
+  formAdd.reset();
 }
 
 // Функция отправки формы изменения профиля
-function handleFormSubmit(evt) {
+function editFormSubmit(evt) {
     evt.preventDefault(); 
 
     const name = nameInput.value;
     const job = jobInput.value;
-
-    const profileTitle = document.querySelector('.profile__title');
-    const profileDescription = document.querySelector('.profile__description');
     profileTitle.textContent = name;
     profileDescription.textContent = job;
-    evt.target.parentElement.parentElement.classList.remove('popup_is-opened');
+    closePopup(popupEdit);
+    formEdit.reset();
 }
+
+// Обработка закрытия попапа на клопку или оверлей
+popups.forEach((popup) => {
+  popup.addEventListener('click', closePopupByClick);
+});
 
 
 // Вывод карточек на страницу
@@ -64,23 +76,17 @@ initialCards.forEach((card) => {
   cardsContainer.append(createCard(card.name, card.link, deleteCard, likeCard, clickCard));
 });
 
-// Обработка клика по кнопкам
-pageContent.addEventListener('click', function (evt) {
-  // Кнопка редактора профиля
-  if (evt.target.classList.contains('profile__edit-button')) {
-    const profileTitle = document.querySelector('.profile__title').textContent;
-    const profileDescription = document.querySelector('.profile__description').textContent;
-    const profileForm = document.forms['edit-profile'];
-    profileForm.elements.name.value = profileTitle;
-    profileForm.elements.description.value = profileDescription;
-    openPopup(popupEdit);
-  }
-  // Кнопка добавления
-  if (evt.target.classList.contains('profile__add-button')) {
+// Обработка клика на кнопку редактирования профиля
+profileEditButton.addEventListener('click', function (evt) {
+  formEdit.elements.name.value = profileTitle.textContent;
+  formEdit.elements.description.value = profileDescription.textContent;
+  openPopup(popupEdit);
+});
+
+profileAddButton.addEventListener('click', function (evt) {
     openPopup(popupAdd);
-  }
-})
+});
 
 // Обработка отправки форм
-formEdit.addEventListener('submit', handleFormSubmit);
+formEdit.addEventListener('submit', editFormSubmit);
 formAdd.addEventListener('submit', addFormSubmit);
