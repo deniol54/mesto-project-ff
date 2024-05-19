@@ -32,8 +32,7 @@ function clickCard (evt) {
   const backImageDescription = popupImage.querySelector('.popup__caption');
   backImage.src = evt.target.src;
   backImageDescription.textContent = evt.target.parentElement.querySelector('.card__title').textContent
-  popupImage.classList.add('popup_is-opened');
-  popupImage.addEventListener('click', closePopup);
+  openPopup(popupImage);
 }
 
 // Функция отправки формы добавления новой карточки
@@ -65,13 +64,15 @@ for(let i = 0; i<initialCards.length; i++) {
   cardsContainer.append(createCard(initialCards[i].name, initialCards[i].link, deleteCard, likeCard, clickCard));
 }
 
-
-// pageContent.addEventListener('keydown', closePopup);
-
 // Обработка клика по кнопкам
 pageContent.addEventListener('click', function (evt) {
   // Кнопка редактора профиля
   if (evt.target.classList.contains('profile__edit-button')) {
+    const profileTitle = document.querySelector('.profile__title').textContent;
+    const profileDescription = document.querySelector('.profile__description').textContent;
+    const profileForm = document.forms['edit-profile'];
+    profileForm.elements.name.value = profileTitle;
+    profileForm.elements.description.value = profileDescription;
     openPopup(popupEdit);
   }
   // Кнопка добавления
