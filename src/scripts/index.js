@@ -1,6 +1,6 @@
 import { initialCards, deleteCard, createCard, likeCard } from './components/cards.js';
-import { openPopup, closePopup } from './components/modal.js';
-
+import { openPopup } from './components/modal.js';
+import '../pages/index.css'; // добавьте импорт главного файла стилей
 //Список карточек
 const cardsContainer = document.querySelector('.places__list');
 // Страница
@@ -60,9 +60,9 @@ function handleFormSubmit(evt) {
 
 
 // Вывод карточек на страницу
-for(let i = 0; i<initialCards.length; i++) {
-  cardsContainer.append(createCard(initialCards[i].name, initialCards[i].link, deleteCard, likeCard, clickCard));
-}
+initialCards.forEach((card) => {
+  cardsContainer.append(createCard(card.name, card.link, deleteCard, likeCard, clickCard));
+});
 
 // Обработка клика по кнопкам
 pageContent.addEventListener('click', function (evt) {
