@@ -13,8 +13,8 @@ function createCard(cardName, cardImgLink, deleteCardFunction, likeCardFunction,
   const cardLikeButton = cardElement.querySelector('.card__like-button');
   const cardImage = cardElement.querySelector('.card__image');
   cardElement.querySelector('.card__title').textContent = cardName;
-  cardElement.querySelector('.card__image').src = cardImgLink;
-  cardElement.querySelector('.card__image').alt = "";
+  cardImage.src = cardImgLink;
+  cardImage.alt = cardName;
   cardDeleteButton.addEventListener('click', deleteCardFunction);
   cardLikeButton.addEventListener('click', likeCardFunction);
   cardImage.addEventListener('click', clickCardFunction);

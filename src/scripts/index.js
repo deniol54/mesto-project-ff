@@ -65,7 +65,7 @@ function editFormSubmit(evt) {
     formEdit.reset();
 }
 
-// Обработка закрытия попапа на клопку или оверлей
+// Обработка закрытия попапа на кнопку или оверлей
 popups.forEach((popup) => {
   popup.addEventListener('click', closePopupByClick);
 });
