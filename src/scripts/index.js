@@ -1,6 +1,7 @@
 import { deleteCard, createCard, likeCard } from './components/card.js';
 import { closePopup, openPopup, closePopupByClick } from './components/modal.js';
-import { initialCards } from './components/cards.js'
+import { initialCards } from './components/cards.js';
+import { clearValidation, enableValidation, validationConfig } from './components/validation.js';
 import '../pages/index.css'; // добавьте импорт главного файла стилей
 //Список карточек
 const cardsContainer = document.querySelector('.places__list');
@@ -51,6 +52,7 @@ function addFormSubmit(evt) {
   cardsContainer.prepend(createCard(place, link, deleteCard, likeCard, clickCard));
   closePopup(popupAdd);
   formAdd.reset();
+  clearValidation(formAdd, validationConfig)
 }
 
 // Функция отправки формы изменения профиля
@@ -80,6 +82,7 @@ initialCards.forEach((card) => {
 profileEditButton.addEventListener('click', function (evt) {
   formEdit.elements.name.value = profileTitle.textContent;
   formEdit.elements.description.value = profileDescription.textContent;
+  clearValidation(formEdit, validationConfig);
   openPopup(popupEdit);
 });
 
@@ -90,3 +93,7 @@ profileAddButton.addEventListener('click', function (evt) {
 // Обработка отправки форм
 formEdit.addEventListener('submit', editFormSubmit);
 formAdd.addEventListener('submit', addFormSubmit);
+
+
+// Включение валидации
+enableValidation(validationConfig);
