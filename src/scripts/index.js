@@ -1,8 +1,8 @@
-import { deleteCard, createCard, likeCard } from './components/card.js';
+import { createCard, likeCard } from './components/card.js';
 import { closePopup, openPopup, closePopupByClick } from './components/modal.js';
 // import { initialCards } from './components/cards.js';
 import { clearValidation, enableValidation, validationConfig } from './components/validation.js';
-import { getUserInfoAndCards, updateCardList, updateProfile, changeAvatarImage } from './components/api.js';
+import { getUserInfoAndCards, updateCardList, updateProfile, removeCard, changeAvatarImage } from './components/api.js';
 import '../pages/index.css'; // добавьте импорт главного файла стилей
 //Список карточек
 const cardsContainer = document.querySelector('.places__list');
@@ -22,8 +22,10 @@ const backImage = popupImage.querySelector('.popup__image');
 const backImageDescription = popupImage.querySelector('.popup__caption');
 // Попап редактирования аватара
 const popupAvatar = document.querySelector('.popup_type_avatar');
+// Попап подтверждения удаления
+const popupDelete = document.querySelector('.popup_type_delete');
 
-const popups = [popupEdit, popupAdd, popupImage, popupAvatar];
+const popups = [popupEdit, popupAdd, popupImage, popupAvatar, popupDelete];
 // ----------Формы----------
 // Форма редактирования профиля
 const formEdit = document.forms['edit-profile'];
@@ -42,8 +44,10 @@ const imageLink = formAdd.elements.link;
 const formAvatar = document.forms['edit-avatar-image'];
 // Поля формы редактирования аватара
 const avatarImageLink = formAvatar.elements.avatar;
+// Форма удаления карточки
+const formDelete = document.forms['delete-confirm'];
 
-
+// Функция для отбражения загрузки
 function renderLoading(isLoading, formElement) {
   const button = formElement.querySelector('.popup__button');
   if (isLoading) {
@@ -52,6 +56,13 @@ function renderLoading(isLoading, formElement) {
   else {
     button.textContent = 'Сохранить';
   }
+}
+
+// Функция удаления карточки(вынесена в index.js для открытия попапа удаления)
+function deleteCard(evt) {
+  const card = evt.target.closest('.card');
+  popupDelete.card = card;
+  openPopup(popupDelete);
 }
 
 // Функция обработки клика по изображению карточки
@@ -131,6 +142,18 @@ function avatarFormSubmit(evt) {
   clearValidation(formAvatar, validationConfig);
 }
 
+// Функция отправки формы удаления карточки
+function deleteFormSubmit(evt) {
+  evt.preventDefault();
+  const card = evt.target.closest('.popup').card;
+  removeCard(card.id)
+    .then(res => card.remove())
+    .catch((err) => {
+      console.log(err); 
+    });
+  closePopup(popupDelete);
+}
+
 
 // Инициализация начального состояния страницы
 function initPage() {
@@ -194,7 +217,8 @@ profileImage.addEventListener('click', evt => {
 // Обработка отправки форм
 formEdit.addEventListener('submit', editFormSubmit);
 formAdd.addEventListener('submit', addFormSubmit);
-formAvatar.addEventListener('submit', avatarFormSubmit)
+formAvatar.addEventListener('submit', avatarFormSubmit);
+formDelete.addEventListener('submit', deleteFormSubmit)
 
 // Включение валидации
 enableValidation(validationConfig);

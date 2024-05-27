@@ -1,13 +1,4 @@
-import { addLike, deleteLike, removeCard } from './api.js';
-
-function deleteCard(event) {
-  const card = event.target.closest('.card');
-  removeCard(card.id)
-    .then(res => card.remove())
-    .catch((err) => {
-      console.log(err); 
-    });
-}
+import { addLike, deleteLike } from './api.js';
 
 function likeCard(evt) {
   evt.target.classList.toggle('card__like-button_is-active');
@@ -58,4 +49,4 @@ function createCard(cardName, cardImgLink, isLiked, cardLikeCount, cardId, isOwn
   return cardElement
 }
 
-export { deleteCard, likeCard, createCard };
+export { likeCard, createCard };
