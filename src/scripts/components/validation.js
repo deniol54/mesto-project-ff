@@ -1,13 +1,3 @@
-const validationConfig = {
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  submitButtonSelector: '.popup__button',
-  inactiveButtonClass: 'popup__button_disabled',
-  inputErrorClass: 'popup__input_type_error',
-  errorClass: 'popup__error_visible'
-};
-
-
 const showInputError = (formElement, inputElement, errorMessage, validationConfig) => {
   const errorElement = formElement.querySelector(`.${inputElement.name}-input-error`);
   inputElement.classList.add(validationConfig.inputErrorClass);
@@ -78,12 +68,11 @@ const toggleButtonState = (inputList, buttonElement, validationConfig) => {
 const clearValidation = (formElement, validationConfig) => {
   const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
   inputList.forEach((inputElement) => {
-    checkInputValidity(formElement,inputElement,validationConfig);
     hideInputError(formElement, inputElement, validationConfig);
   })
+  // Ресет формы не нужен, так как в случае очистки формы
+  // редактирования профиля пропадут данные в полях
   toggleButtonState(inputList, formElement.querySelector(validationConfig.submitButtonSelector), validationConfig);
 }
 
-enableValidation(validationConfig);
-
-export {clearValidation, enableValidation, validationConfig};
+export {clearValidation, enableValidation, checkInputValidity};

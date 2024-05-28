@@ -1,7 +1,7 @@
 import { createCard, likeCard } from './components/card.js';
 import { closePopup, openPopup, closePopupByClick } from './components/modal.js';
 // import { initialCards } from './components/cards.js';
-import { clearValidation, enableValidation, validationConfig } from './components/validation.js';
+import { clearValidation, enableValidation, checkInputValidity } from './components/validation.js';
 import { getUserInfoAndCards, updateCardList, updateProfile, removeCard, changeAvatarImage } from './components/api.js';
 import '../pages/index.css'; // добавьте импорт главного файла стилей
 //Список карточек
@@ -47,15 +47,20 @@ const avatarImageLink = formAvatar.elements.avatar;
 // Форма удаления карточки
 const formDelete = document.forms['delete-confirm'];
 
+// Настройки для валидации
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+};
+
 // Функция для отбражения загрузки
 function renderLoading(isLoading, formElement) {
   const button = formElement.querySelector('.popup__button');
-  if (isLoading) {
-    button.textContent = 'Сохранение...';
-  }
-  else {
-    button.textContent = 'Сохранить';
-  }
+  button.textContent = isLoading ?  'Сохранение...' : 'Сохранить';
 }
 
 // Функция удаления карточки(вынесена в index.js для открытия попапа удаления)
@@ -81,16 +86,7 @@ function addFormSubmit(evt) {
   const link = imageLink.value;
   updateCardList(place, link)
     .then(res => cardsContainer.prepend(
-      createCard(
-        res.name,
-        res.link,
-        false,
-        res.likes.length >0 ? res.likes.length: '',
-        res._id,
-        true, 
-        deleteCard, 
-        likeCard, 
-        clickCard)
+      createCard(res, res.owner._id, deleteCard, likeCard, clickCard)
     ))
     .catch((err) => {
       console.log(err); 
@@ -166,22 +162,8 @@ function initPage() {
 
     // Вывод карточек на страницу
     cards.forEach((card) => {
-      const likeCount =  card.likes.length>0 ? String(card.likes.length): '';
-      const isLiked = card.likes.some(user => {
-        return user._id === userInfo._id;
-      });
-      const isOwner = card.owner._id === userInfo._id;
       cardsContainer.append(
-        createCard(
-          card.name, 
-          card.link,
-          isLiked,
-          likeCount, 
-          card._id, 
-          isOwner,
-          deleteCard, 
-          likeCard, 
-          clickCard));
+        createCard(card, userInfo._id, deleteCard, likeCard, clickCard));
     });
   })
   .catch((err) => {
@@ -200,8 +182,11 @@ popups.forEach((popup) => {
 
 // Обработка клика на кнопку редактирования профиля
 profileEditButton.addEventListener('click', function (evt) {
-  formEdit.elements.name.value = profileTitle.textContent;
-  formEdit.elements.description.value = profileDescription.textContent;
+  nameInput.value = profileTitle.textContent;
+  jobInput.value = profileDescription.textContent;
+  // Необходимо для того, чтобы после очистки валидации кнопка оставалась активной 
+  checkInputValidity(formEdit, nameInput, validationConfig);
+  checkInputValidity(formEdit, jobInput, validationConfig);
   clearValidation(formEdit, validationConfig);
   openPopup(popupEdit);
 });
